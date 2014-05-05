@@ -1,0 +1,8 @@
+<?php
+/**
+ * Blocks template 5
+ */?>
+ <div class="block_style_5">
+ <span class="block-ico-video"></span>
+<iframe width="482" height="250" src="//www.youtube.com/embed/r0uodoFRyg0" frameborder="0" allowfullscreen></iframe>
+</div>

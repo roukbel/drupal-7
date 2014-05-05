@@ -1,0 +1,65 @@
+<?php
+function home_page_config_enable() {
+	//first style (article blocks)
+	$style = image_style_save(array('name' => 'home_page_config_style_1'));
+	$effect = array(
+    'name' => 'image_resize',
+    'data' => array(
+      'width' => 236,
+      'height' => 160,
+      'upscale' => TRUE,
+	),
+    'isid' => $style['isid'],
+	);
+	image_effect_save($effect);
+
+	//second style (caricature and picture blocks)
+	$style = image_style_save(array('name' => 'home_page_config_style_2'));
+	$effect = array(
+    'name' => 'image_resize',
+    'data' => array(
+      'width' => 236,
+      'height' => 250,
+      'upscale' => TRUE,
+	),
+    'isid' => $style['isid'],
+	);
+	image_effect_save($effect);
+
+	//third style (video block)
+	$style = image_style_save(array('name' => 'home_page_config_style_3'));
+	$effect = array(
+    'name' => 'image_resize',
+    'data' => array(
+      'width' => 482,
+      'height' => 250,
+      'upscale' => TRUE,
+	),
+    'isid' => $style['isid'],
+	);
+	image_effect_save($effect);
+
+	//forth style (video block)
+	$style = image_style_save(array('name' => 'home_page_config_style_4'));
+	$effect = array(
+    'name' => 'image_resize',
+    'data' => array(
+      'width' => 482,
+      'height' => 210,
+      'upscale' => TRUE,
+	),
+    'isid' => $style['isid'],
+	);
+	image_effect_save($effect);
+}
+
+function home_page_config_disable() {
+	//first style (article blocks)
+	image_style_delete(image_style_load('home_page_config_style_1'));
+	//second style (caricature and picture blocks)
+	image_style_delete(image_style_load('home_page_config_style_2'));
+	//second style (video block)
+	image_style_delete(image_style_load('home_page_config_style_3'));
+	//second style (regions block)
+	image_style_delete(image_style_load('home_page_config_style_4'));
+}

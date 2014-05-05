@@ -1,0 +1,5 @@
+name = Home page configuration blocks
+description = This module provide possibility to associate content with block in home page.
+package = Rozana radio
+core = 7.x
+files[] = home_page_config.module

@@ -1,0 +1,979 @@
+<?php
+
+function home_page_config_init(){
+	drupal_add_css(drupal_get_path('module', 'home_page_config').'/css/home_page_config.css');
+}
+
+function content_types_config(){
+	/*$cfg = array('audio'=>array('darticle'),
+	 'video'=>array('article'),
+	 'image'=>array('darticle'),
+	 'news'=>array('earticle'),
+	 );*/
+
+	$cfg = array(
+			'audio'=>array('rz_podcast'),
+		  	'video'=>array('rz_video'),
+		  	'image'=>array('rz_photos','rz_caricature'),
+		  	'news'=>array('rz_news_article','rz_opinion_article','rz_report_article'),
+	);
+
+	return $cfg;
+}
+/**
+ *	Image uri build
+ */
+function image_uri_config($node){
+	switch ($node->type) {
+		case 'rz_video':
+			$files = variable_get('file_public_path', conf_path() . '/files');
+			$youtube_img_dir = variable_get('youtube_thumb_dir', 'youtube');
+			$video_id = $node->field_rz_video_url_youtube['und']['0']['video_id'];
+			$dest  = $files . '/' . $youtube_img_dir . '/' . $video_id . '.png';
+			if (file_exists($dest)) {
+				$img_uri  ='public://' . $youtube_img_dir . '/' . $video_id . '.png';
+			}
+			else{
+				$img_uri  ='public://' . $youtube_img_dir . '/' . 'loading_default.jpg';
+			}
+			break;
+		case 'rz_podcast':
+			$img_uri  ='public://home_page_config/podcast_img.jpeg';
+			break;
+		default:
+			module_load_include('module', 'field_collection', 'field_collection');
+			$n = field_collection_item_load($node->field_rz_featured_photo['und'][0]['value']);
+			$img_uri = $n->field_rz_image_file['und'][0]['uri'];
+			break;
+	}
+	return ($img_uri);
+}
+/**
+ *	hook_block_info implementation
+ */
+function home_page_config_block_info() {
+	$blocks = array();
+	$languages = language_list();
+	foreach ($languages as $value) {
+		$blocks['block_1_'.$value->language] = array(
+		'info' => t('home_page_config_block_1_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+		$blocks['block_2_'.$value->language] = array(
+		'info' => t('home_page_config_block_2_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+		$blocks['block_3_'.$value->language] = array(
+		'info' => t('home_page_config_block_3_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+		$blocks['block_4_'.$value->language] = array(
+		'info' => t('home_page_config_block_4_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+		$blocks['block_5_'.$value->language] = array(
+		'info' => t('home_page_config_block_5_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+		$blocks['block_6_'.$value->language] = array(
+		'info' => t('home_page_config_block_6_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+		$blocks['block_7_'.$value->language] = array(
+		'info' => t('home_page_config_block_7_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+		$blocks['block_8_'.$value->language] = array(
+		'info' => t('home_page_config_block_8_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+		$blocks['block_9_'.$value->language] = array(
+		'info' => t('home_page_config_block_9_'.$value->native),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+	}
+	return $blocks;
+}
+/*===================================================================
+ *					hook_block_view implementation
+ ===================================================================*/
+function home_page_config_block_view($delta = '') {
+	$block = array();
+	$languages = language_list();
+	$c = content_types_config();
+	foreach ($languages as $value) {
+		switch ($delta) {
+			case 'block_1_'.$value->language:
+				if($node=home_page_config_cache('block_1_'.$value->language)){
+					if (in_array($node->type,array('rz_news_article','rz_report_article'))) {
+						$authors = $node->field_rz_authors;
+						$data['authors'] = $authors['und'] ;
+					}
+					elseif ($node->type == 'rz_opinion_article'){
+						$authors  = $node->field_rz_writer;
+						$data['authors'] = $authors ['und'];
+					}
+					$data['content_type'] = variable_get('dropdown_first_block_1_'.$value->language,'');
+					$data ['uri'] = image_uri_config($node);
+					$data ['title'] = $node->title;
+					$data ['ico_type'] = _returnIconeType($node->type);
+					$block = array(
+			'subject' => '<none>',
+			'content' => l(theme('home_page_config_block_template_1',$data),'node/'.$node->nid,array('html' => TRUE)),
+					);
+				}
+				break;
+			case 'block_2_'.$value->language:
+				if($node=home_page_config_cache('block_2_'.$value->language)){
+					if (in_array($node->type,array('rz_news_article','rz_report_article'))) {
+						$authors = $node->field_rz_authors;
+						$data['authors'] = $authors['und'] ;
+					}
+					elseif ($node->type == 'rz_opinion_article'){
+						$authors  = $node->field_rz_writer;
+						$data['authors'] = $authors ['und'];
+					}
+					$data['content_type'] = variable_get('dropdown_first_block_2_'.$value->language,'');
+					$data ['uri'] = image_uri_config($node);
+					$data ['title'] = $node->title;
+					$data ['ico_type'] = _returnIconeType($node->type);
+					$block = array(
+			'subject' => '<none>',
+			'content' => l(theme('home_page_config_block_template_1',$data),'node/'.$node->nid,array('html' => TRUE)),
+					);
+				}
+				break;
+			case 'block_3_'.$value->language:
+				if($node=home_page_config_cache('block_3_'.$value->language)){
+					if (in_array($node->type,array('rz_news_article','rz_report_article'))) {
+						$authors = $node->field_rz_authors;
+						$data['authors'] = $authors['und'] ;
+					}
+					elseif ($node->type == 'rz_opinion_article'){
+						$authors  = $node->field_rz_writer;
+						$data['authors'] = $authors ['und'];
+					}
+					$data['content_type'] = variable_get('dropdown_first_block_3_'.$value->language,'');
+					$data ['uri'] = image_uri_config($node);
+					$data ['title'] = $node->title;
+					$data ['ico_type'] = _returnIconeType($node->type);
+					$block = array(
+			'subject' => '<none>',
+			'content' => l(theme('home_page_config_block_template_1',$data),'node/'.$node->nid,array('html' => TRUE)),
+					);
+				}
+				break;
+			case 'block_4_'.$value->language:
+				if($node=home_page_config_cache('block_4_'.$value->language)){
+					if (in_array($node->type,array('rz_news_article','rz_report_article'))) {
+						$authors = $node->field_rz_authors;
+						$data['authors'] = $authors['und'] ;
+					}
+					elseif ($node->type == 'rz_opinion_article'){
+						$authors  = $node->field_rz_writer;
+						$data['authors'] = $authors ['und'];
+					}
+					$data['content_type'] = variable_get('dropdown_first_block_4_'.$value->language,'');
+					$data ['uri'] = image_uri_config($node);
+					$data ['title'] = $node->title;
+					$data ['ico_type'] = _returnIconeType($node->type);
+					$block = array(
+			'subject' => '<none>',
+			'content' => l(theme('home_page_config_block_template_1',$data),'node/'.$node->nid,array('html' => TRUE)),
+					);
+				}
+				break;
+			case 'block_5_'.$value->language:
+				if($node=home_page_config_cache('block_5_'.$value->language)){
+					$data ['uri'] = image_uri_config($node);
+					$data ['title'] = $node->title;
+					$data['img_type'] = $node->type;
+					$block = array(
+				'subject' => '<none>',
+				'content' =>l(theme('home_page_config_block_template_2',$data),'node/'.$node->nid,array('html' => TRUE)),
+					);
+				}
+				break;
+			case 'block_6_'.$value->language:
+				if($node=home_page_config_cache('block_6_'.$value->language)){
+					$data ['uri'] = image_uri_config($node);
+					$data ['title'] = $node->title;
+					$data['img_type'] = $node->type;
+					$block = array(
+				'subject' => '<none>',
+				'content' =>  l(theme('home_page_config_block_template_2',$data),'node/'.$node->nid,array('html' => TRUE)),
+					);
+				}
+				break;
+			case 'block_7_'.$value->language:
+				$data =array();
+
+				if($node=home_page_config_cache('block_7_'.$value->language)){
+					$nid=$node->nid;
+					$data ['ico_type'] = _returnIconeType($node->type);
+					if (in_array($node->type,array('rz_news_article','rz_report_article'))) {
+						$authors = $node->field_rz_authors;
+						$data['authors'] = $authors['und'] ;
+					}
+					elseif ($node->type == 'rz_opinion_article'){
+						$authors  = $node->field_rz_writer;
+						$data['authors'] = $authors ['und'];
+					}
+					$data['last_news']=array('title'=>$node->title,
+									'nid'=>$nid,	
+									'uri'=>image_uri_config($node),
+					);
+					$data['content_type'] = variable_get('dropdown_first_block_7_'.$value->language,'');
+				}
+				else {
+					//$data['last_news']=NULL;
+					$nid=NULL;
+				}
+				if ($cache=cache_get('home_page_config_block_7_'.$value->language.'_last_4_news')) {
+					$list=$cache->data;
+					if (!empty($list)) {
+						$data['last_4_news']=array('items'=>$list,'type'=>'ul');
+					}
+					else {
+						cache_clear_all('home_page_config_block_7_'.$value->language.'_last_4_news','cache', TRUE);
+						$data['last_4_news']=NULL;
+					}
+				}
+				else {
+					$last_4_news_nid=home_page_config_get_last_4_news('rz_news_article',$value->language,$nid);
+					if ($last_4_news_nid) {
+						foreach ($last_4_news_nid as $nid) {
+							$node=node_load($nid);
+							$list['news_title_'.$nid]=l($node->title,'node/'.$node->nid,array('html' => TRUE));
+							cache_set('home_page_config_block_7_'.$value->language.'_last_4_news',$list,'cache',time()+3600);
+							$data['last_4_news']=array('items'=>$list,'type'=>'ul');
+						}
+					}
+					else {
+						$data['last_4_news']=NULL;
+					}
+				}
+				if($node=home_page_config_cache('block_71_'.$value->language)){
+					$nid=$node->nid;
+					$data['podcast']=array('nid'=>$nid,);
+				}
+				else {
+					$data['podcast']=array('nid'=>'',);
+				}
+				$data['language'] = $value->language;
+				$block = array(
+				'subject' => '<none>',
+				'content' =>  theme('home_page_config_block_template_3',$data),
+				);
+				break;
+			case 'block_8_'.$value->language:
+				$data = array();
+				if ($cache=cache_get('home_page_config_block_8_'.$value->language)) {
+					if (!empty($cache)) {
+						$data['terms'] = $cache->data;
+					}
+					else {
+						cache_clear_all('home_page_config_block_8_'.$value->language, TRUE);
+						$data['terms']=NULL;
+					}
+				}
+				else {
+					$vocab = taxonomy_vocabulary_machine_name_load('syrian_cities');
+					//dpm($vocab);
+					$vocab_terms = taxonomy_get_tree($vocab->vid);
+					foreach ($vocab_terms as $term) {
+						if ($term->language == $value->language) {
+							$terms[] = $term->name;
+						}
+					}
+					$data['terms'] = $terms;
+					cache_set('home_page_config_block_8_'.$value->language,$terms,'cache',time()+3600);
+
+				}
+				$block = array(
+				'subject' =>  '<none>',
+				'content' =>theme('home_page_config_block_template_4',$data),
+				);
+				break;
+			case 'block_9_'.$value->language:
+				$data =array();
+				if ($cache=cache_get('home_page_config_block_9_'.$value->language)) {
+					$video_url=$cache->data;
+					if (!empty($video_url)) {
+						//dpm('block_9_'.$value->language.' : already cached !     --> Cache_Get');
+						$data['video_url'] = $video_url;
+					}
+					else {
+						cache_clear_all('home_page_config_block_9_'.$value->language,'cache', TRUE);
+						//dpm($block_id.' : has an EMPTY cache !     --> Cache_Clear_all','cache_clear','error');
+					}
+				}
+				else{
+					$video_url = variable_get('url_tf_block_9_'.$value->language);
+					$data['video_url'] = $video_url;
+					cache_set('home_page_config_block_9_'.$value->language,$video_url,'cache',time()+3600);
+					//dpm('block_9_'.$value->language.' : No cache !     --> Cache_Set');
+				}
+				$block = array(
+				'subject' =>  '<none>',
+				'content' =>theme('home_page_config_block_template_5',$data),
+				);
+					
+				break;
+		}
+	}
+	return $block;
+}
+/*===================================================================
+ *								Form menu
+ ===================================================================*/
+function home_page_config_menu()
+{
+	$items = array();
+	$items['admin/config/user-interface/home_page_config'] = array(
+        'title' => "Home page's blocks configuration",
+        'description' => "Configure the home page's blocks",
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('home_page_config_header_block_form'),
+		'access callback' => TRUE,
+	 	'access arguments' => array('administer users'),
+	);
+	$items['admin/config/user-interface/home_page_config/header'] = array(
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => t('header'),
+	'weight' => 1,
+	);
+	$items['admin/config/user-interface/home_page_config/main_content'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => t('center'),
+	'page callback' => 'drupal_get_form',
+      'page arguments' => array('home_page_config_main_content_blocks_form'),
+      'access callback' => TRUE,
+	'weight' => 2,
+	);
+	$items['admin/config/user-interface/home_page_config/sidebar_first'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => t('left column'),
+	'page callback' => 'drupal_get_form',
+      'page arguments' => array('home_page_config_sidebar_first_blocks_form'),
+      'access callback' => TRUE,
+	'weight' => 3,
+	);
+	$items["admin/config/user-interface/home_page_config/sidebar_second"] = array(
+      'type' => MENU_LOCAL_TASK,
+      'title' => t('right column'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('home_page_config_sidebar_second_blocks_form'),
+      'access callback' => TRUE,
+	'weight' => 4,
+	);
+	return $items;
+}
+/*===================================================================
+ *		Block configuration form (for block N\B0: 1,2,3,4,9)
+ ===================================================================*/
+function home_page_config_sidebar_first_blocks_form ($form, &$form_state) {
+	$languages = language_list();
+	$content_types = array('none'=>t('< select one of the listed content types >'),'audio'=>'Audio','video'=>'Video','image'=>'Image','news'=>'News');
+	$form['fieldset_block_1'] = array(
+    '#type' => 'fieldset',
+	'#title' => t('First block'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+	);
+	foreach ($languages as $value) {
+		//-------------- Block_1 -------------------------------
+		$form['fieldset_block_1']['fieldset_block_1_'.$value->language] = array(
+    '#type' => 'fieldset',
+	'#title' =>$value->native,
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+		);
+		$selected_type_block_1 = isset($form_state['values']['dropdown_first_block_1_'.$value->language]) ? $form_state['values']['dropdown_first_block_1_'.$value->language] : variable_get('dropdown_first_block_1_'.$value->language,'none');
+		$form['fieldset_block_1']['fieldset_block_1_'.$value->language]['dropdown_first_block_1_'.$value->language] = array(
+    '#type' => 'select',
+    '#title' => 'Content Type',
+    '#options' => $content_types,
+    '#default_value' => $selected_type_block_1,
+    '#ajax' => array(
+      'callback' => 'home_page_config_callback',
+      'wrapper' => 'dropdown-second-replace_block_1_'.$value->language,
+		),
+		);
+
+		$form['fieldset_block_1']['fieldset_block_1_'.$value->language]['dropdown_second_block_1_'.$value->language] = array(
+    '#type' => 'select',
+    '#title' => $selected_type_block_1.' nodes',
+    '#prefix' => '<div id="dropdown-second-replace_block_1_'.$value->language.'">',
+    '#suffix' => '</div>',
+    '#options' => home_page_config_get_second_dropdown_options($selected_type_block_1,$value->language),
+	'#default_value' => variable_get('dropdown_second_block_1_'.$value->language,'none'),
+	'#description' => message_builder($selected_type_block_1,variable_get('dropdown_second_block_1_'.$value->language,'none')),
+		);
+		$form['#submit']=array('home_page_config_form_update');
+	}
+	return system_settings_form($form);
+}
+/*
+ * Main content region blocks config
+ */
+function home_page_config_main_content_blocks_form($form, &$form_state) {
+	$languages = language_list();
+	$content_types = array('none'=>t('< select one of the listed content types >'),'audio'=>'Audio','video'=>'Video','image'=>'Image','news'=>'News');
+	$form['fieldset_block_2'] = array(
+    '#type' => 'fieldset',
+	'#title' => t('First block'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+	);
+	$form['fieldset_block_3'] = array(
+    '#type' => 'fieldset',
+	'#title' => t('Second block'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+	);
+	$form['fieldset_block_9'] = array(
+    '#type' => 'fieldset',
+	'#title' => t('Video block'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+	);
+	foreach ($languages as $value) {
+		//-------------- Block_2 -------------------------------
+		$form['fieldset_block_2']['fieldset_block_2_'.$value->language] = array(
+		 '#type' => 'fieldset',
+		 '#title' =>$value->native,
+		 '#collapsible' => TRUE,
+		 '#collapsed' => FALSE,
+		);
+		$selected_type_block_2 = isset($form_state['values']['dropdown_first_block_2_'.$value->language]) ? $form_state['values']['dropdown_first_block_2_'.$value->language] : variable_get('dropdown_first_block_2_'.$value->language,'none');
+		$form['fieldset_block_2']['fieldset_block_2_'.$value->language]['dropdown_first_block_2_'.$value->language] = array(
+		 '#type' => 'select',
+		 '#title' => 'Content Type',
+		 '#options' => $content_types,
+		 '#default_value' => $selected_type_block_2,
+		 '#ajax' => array(
+		 'callback' => 'home_page_config_callback',
+		 'wrapper' => 'dropdown-second-replace_block_2_'.$value->language,
+		),
+		);
+		$form['fieldset_block_2']['fieldset_block_2_'.$value->language]['dropdown_second_block_2_'.$value->language] = array(
+		 '#type' => 'select',
+		 '#title' => $selected_type_block_2.' nodes',
+		 '#prefix' => '<div id="dropdown-second-replace_block_2_'.$value->language.'">',
+		 '#suffix' => '</div>',
+		 '#options' => home_page_config_get_second_dropdown_options($selected_type_block_2,$value->language),
+		 '#default_value' => variable_get('dropdown_second_block_2_'.$value->language,'none'),
+		 '#description' => message_builder($selected_type_block_2,variable_get('dropdown_second_block_2_'.$value->language,'none')),
+		);
+		//-------------- Block_3 -------------------------------
+		$form['fieldset_block_3']['fieldset_block_3_'.$value->language] = array(
+		'#type' => 'fieldset',
+		'#title' =>$value->native,
+		'#collapsible' => TRUE,
+		'#collapsed' => FALSE,
+		);
+		$selected_type_block_3 = isset($form_state['values']['dropdown_first_block_3_'.$value->language]) ? $form_state['values']['dropdown_first_block_3_'.$value->language] : variable_get('dropdown_first_block_3_'.$value->language,'none');
+		$form['fieldset_block_3']['fieldset_block_3_'.$value->language]['dropdown_first_block_3_'.$value->language] = array(
+		'#type' => 'select',
+		'#title' => 'Content Type',
+		'#options' => $content_types,
+		'#default_value' => $selected_type_block_3,
+		'#ajax' => array(
+		'callback' => 'home_page_config_callback',
+		'wrapper' => 'dropdown-second-replace_block_3_'.$value->language,
+		),
+		);
+		$form['fieldset_block_3']['fieldset_block_3_'.$value->language]['dropdown_second_block_3_'.$value->language] = array(
+		'#type' => 'select',
+		'#title' => $selected_type_block_3.' nodes',
+		'#prefix' => '<div id="dropdown-second-replace_block_3_'.$value->language.'">',
+		'#suffix' => '</div>',
+		'#options' => home_page_config_get_second_dropdown_options($selected_type_block_3,$value->language),
+		'#default_value' => variable_get('dropdown_second_block_3_'.$value->language,'none'),
+		'#description' => message_builder($selected_type_block_3,variable_get('dropdown_second_block_3_'.$value->language,'none')),
+		);
+		//-------------- Block_9 -------------------------------
+		$form['fieldset_block_9']['fieldset_block_9_'.$value->language] = array(
+		'#type' => 'fieldset',
+		'#title' =>$value->native,
+		'#collapsible' => TRUE,
+		'#collapsed' => FALSE,
+		);
+		$form['fieldset_block_9']['fieldset_block_9_'.$value->language]['url_tf_block_9_'.$value->language] = array(
+		'#type' => 'textfield',
+		'#title' =>t('Video URL'),
+		'#default_value' => variable_get('url_tf_block_9_'.$value->language,'none'),
+		'#required' => TRUE,
+		'#element_validate' => array('_url_validation')
+		);
+
+		$form['#submit']=array('home_page_config_form_update');
+	}
+	return system_settings_form($form);
+}
+function _url_validation($element, &$form_state, $form) {
+	if (!valid_url($element['#value'],TRUE)) {
+		form_error($element, t('"'.$element['#value'].'" is invalid URL'));
+	}
+}
+/*
+ * Sidebar second region blocks config
+ */
+
+function home_page_config_sidebar_second_blocks_form($form, &$form_state) {
+	$languages = language_list();
+	$content_types = array('none'=>t('< select one of the listed content types >'),'audio'=>'Audio','video'=>'Video','image'=>'Image','news'=>'News');
+	$form['fieldset_block_4'] = array(
+    '#type' => 'fieldset',
+	'#title' => t('First block'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+	);
+	foreach ($languages as $value) {
+		//-------------- Block_4 -------------------------------
+		$form['fieldset_block_4']['fieldset_block_4_'.$value->language] = array(
+		'#type' => 'fieldset',
+		'#title' =>$value->native,
+		'#collapsible' => TRUE,
+		'#collapsed' => FALSE,
+		);
+		$selected_type_block_4 = isset($form_state['values']['dropdown_first_block_4_'.$value->language]) ? $form_state['values']['dropdown_first_block_4_'.$value->language] : variable_get('dropdown_first_block_4_'.$value->language,'none');
+		$form['fieldset_block_4']['fieldset_block_4_'.$value->language]['dropdown_first_block_4_'.$value->language] = array(
+		'#type' => 'select',
+		'#title' => 'Content Type',
+		'#options' => $content_types,
+		'#default_value' => $selected_type_block_4,
+		'#ajax' => array(
+		'callback' => 'home_page_config_callback',
+		'wrapper' => 'dropdown-second-replace_block_4_'.$value->language,
+		),
+		);
+		$form['fieldset_block_4']['fieldset_block_4_'.$value->language]['dropdown_second_block_4_'.$value->language] = array(
+		'#type' => 'select',
+		'#title' => $selected_type_block_4.' nodes',
+		'#prefix' => '<div id="dropdown-second-replace_block_4_'.$value->language.'">',
+		'#suffix' => '</div>',
+		'#options' => home_page_config_get_second_dropdown_options($selected_type_block_4,$value->language),
+		'#default_value' => variable_get('dropdown_second_block_4_'.$value->language,'none'),
+		'#description' => message_builder($selected_type_block_4,variable_get('dropdown_second_block_4_'.$value->language,'none')),
+		);
+		$form['#submit']=array('home_page_config_form_update');
+	}
+	return system_settings_form($form);
+}
+/*===================================================================
+ *	Second form tab (Last news setting of the header bloc 'block 7'))
+ ===================================================================*/
+function home_page_config_header_block_form($form, &$form_state) {
+	$languages = language_list();
+	$content_types = array('none'=>t('< select one of the listed content types >'),'audio'=>'Audio','video'=>'Video','image'=>'Image','news'=>'News');
+	$form['fieldset_block_7'] = array(
+    '#type' => 'fieldset',
+	'#title' => t('last news'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+	);
+	$form['fieldset_block_71'] = array(
+    '#type' => 'fieldset',
+	'#title' => t('Podcast'),
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+	);
+	foreach ($languages as $value) {
+		//-------------- Last news -------------------------------
+		$form['fieldset_block_7']['fieldset_block_7_'.$value->language] = array(
+    '#type' => 'fieldset',
+	'#title' =>$value->native,
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+		);
+		$selected_type_block_7 = isset($form_state['values']['dropdown_first_block_7_'.$value->language]) ? $form_state['values']['dropdown_first_block_7_'.$value->language] : variable_get('dropdown_first_block_7_'.$value->language,'none');
+		$form['fieldset_block_7']['fieldset_block_7_'.$value->language]['dropdown_first_block_7_'.$value->language] = array(
+    '#type' => 'select',
+    '#title' => 'Content Type',
+    '#options' => $content_types,
+    '#default_value' => $selected_type_block_7,
+    '#ajax' => array(
+      'callback' => 'home_page_config_callback',
+      'wrapper' => 'dropdown-second-replace_block_7_'.$value->language,
+		),
+		);
+
+		$form['fieldset_block_7']['fieldset_block_7_'.$value->language]['dropdown_second_block_7_'.$value->language] = array(
+    '#type' => 'select',
+    '#title' => $selected_type_block_7.' nodes',
+    '#prefix' => '<div id="dropdown-second-replace_block_7_'.$value->language.'">',
+    '#suffix' => '</div>',
+    '#options' => home_page_config_get_second_dropdown_options($selected_type_block_7,$value->language),
+	'#default_value' => variable_get('dropdown_second_block_7_'.$value->language,'none'),
+	'#description' => message_builder($selected_type_block_7,variable_get('dropdown_second_block_7_'.$value->language,'none')
+		),
+		);
+		//--------------------------- Podcast config --------------------
+		$form['fieldset_block_71']['fieldset_block_71_'.$value->language] = array(
+    '#type' => 'fieldset',
+	'#title' =>$value->native,
+  	'#collapsible' => TRUE,
+  	'#collapsed' => FALSE,
+		);
+		$form['fieldset_block_71']['fieldset_block_71_'.$value->language]['dropdown_second_block_71_'.$value->language] = array(
+    '#type' => 'select',
+    '#title' => t('Select a podcast'),
+    '#options' =>  home_page_config_get_second_dropdown_options('audio',$value->language),
+	'#default_value' => variable_get('dropdown_second_block_71_'.$value->language,'none'),
+	'#description' => message_builder('audio',variable_get('dropdown_second_block_71_'.$value->language,'none')
+		),
+		);
+
+		$form['#submit']=array('home_page_config_form_update');
+	}
+	return system_settings_form($form);
+}
+/*===================================================================================
+ *	Form second-dropdown select list rebuilding (ajax query)
+ ===================================================================================*/
+function home_page_config_callback($form, $form_state) {
+	$name= explode('_', $form_state[triggering_element]['#name']);
+	return $form['fieldset_block_'.$name[3]]['fieldset_block_'.$name[3].'_'.$name[4]]['dropdown_second_block_'.$name[3].'_'.$name[4]];
+}
+/*===================================================================================
+ *	Form (home_page_config_blocks_form) second-dropdown select list options db query
+ ====================================================================================*/
+function home_page_config_get_second_dropdown_options($type,$language) {
+	$nodes['none'] = t('< select one of the listed '.ucfirst($type).' >');
+	$content_types_id=content_types_config();
+	$query = db_select('node', 'n');
+	switch ($type) {
+		case 'audio':
+			$query->condition('type',$content_types_id['audio'],'IN');
+			break;
+		case 'video':
+			$query->condition('type',$content_types_id['video'],'IN');
+			break;
+		case 'image':
+			$query->condition('type',$content_types_id['image'],'IN');
+			break;
+		case 'news':
+			$query->condition('type',$content_types_id['news'],'IN');
+			break;
+		default:
+			return (array('none'=>t('< none >')));
+			break;
+	}
+	$query->condition('language', $language);
+	$query->condition('status', '1');
+	$query->fields('n', array('nid','title','created'));
+	$query->orderBy('created', 'DESC');
+	$result = $query->execute();
+	while ($record = $result->fetchAssoc()) {
+		$nodes[$record['nid']] = t(date("M-d-Y",$record['created']).' : '.$record['title']);
+	}
+	return ($nodes);
+}
+/*===================================================================
+ *						Last news db query
+ ===================================================================*/
+function home_page_config_get_last($type,$language){
+	$query = db_select('node', 'n');
+	$query->condition('type',$type);
+	$query->condition('language', $language);
+	$query->condition('status', '1');
+	$query->range(0,1);
+	$query->fields('n', array('nid'));
+	$query->orderBy('changed', 'DESC');
+	$result = $query->execute();
+	return ($result->fetchField());
+}
+/**
+ *
+ * @param unknown $type
+ * @param unknown $language
+ * @param unknown $nid
+ * @return Ambigous <boolean, A>
+ */
+function home_page_config_get_last_4_news($type,$language,$nid){
+	$query = db_select('node', 'n');
+	$query->condition('type',$type);
+	$query->condition('language', $language);
+	if($nid != NULL){
+		$query->condition('nid',$nid,'<>');
+	}
+	$query->condition('status', '1');
+	$query->range(0,4);
+	$query->fields('n', array('nid'));
+	$query->orderBy('changed', 'DESC');
+	$result = $query->execute();
+	while ($nid = $result->fetchField()) {
+		$last_4_news_nid['block_7_'.$nid]=$nid;
+	}
+	return (empty($last_4_news_nid)? FALSE : $last_4_news_nid);
+}
+/*===================================================================
+ *						hook_theme implementation
+ ===================================================================*/
+function home_page_config_theme()
+{
+	return array(
+        'home_page_config_block_template_1' => array(
+        'template' => 'tpl/home-page-config-block-template-1',
+        'variables' => array()),
+
+		'home_page_config_block_template_2' => array(
+        'template' => 'tpl/home-page-config-block-template-2',
+        'variables' => array()),
+
+		'home_page_config_block_template_3' => array(
+        'template' => 'tpl/home-page-config-block-template-3',
+        'variables' => array()),
+
+		'home_page_config_block_template_4' => array(
+        'template' => 'tpl/home-page-config-block-template-4',
+        'variables' => array()),
+
+		'home_page_config_block_template_5' => array(
+        'template' => 'tpl/home-page-config-block-template-5',
+        'variables' => array()),
+	);
+}
+/*===================================================================
+ *						Header block (block 7) setting
+ ===================================================================*/
+function home_page_config_block_configure($delta = ''){
+	$form = array();
+	$choices=array('0'=> t('Disable'), '1'=>t('Enable'));
+	$languages = language_list();
+	foreach ($languages as $value) {
+		if ($delta == 'block_7_'.$value->language) {
+			$form['last_news_'.$value->language] = array(
+   				'#type' => 'radios',
+   				'#title' => t('Last news block ( '.$value->native.' )'),
+				'#default_value' => variable_get('last_news_'.$value->language,'1'),
+  				'#options' =>$choices,
+   				'#description' => t('activation and deactivation of the news block'),
+			);
+			$form['radio_'.$value->language] = array(
+   				'#type' => 'radios',
+   				'#title' => t('Radio block'),
+				'#default_value' => variable_get('radio_'.$value->language,'1'),
+  				'#options' =>$choices,
+   				'#description' => t('activation and deactivation of the radio block'),
+			);
+			$form['podcast_'.$value->language] = array(
+   				'#type' => 'radios',
+   				'#title' => t('podcast block'),
+				'#default_value' => variable_get('podcast_'.$value->language,'1'),
+  				'#options' =>$choices,
+   				'#description' => t('activation and deactivation of the podcast block'),
+			);
+			$form['daily_program_'.$value->language] = array(
+   				'#type' => 'radios',
+   				'#title' => t('Daily program block'),
+				'#default_value' => variable_get('daily_program_'.$value->language,'1'),
+  				'#options' =>$choices,
+   				'#description' => t('activation and deactivation of the daily program block'),
+			);
+			$form['last_4_news_'.$value->language] = array(
+   				'#type' => 'radios',
+   				'#title' => t('Last 4 news block'),
+				'#default_value' => variable_get('last_4_news_'.$value->language,'1'),
+  				'#options' =>$choices,
+   				'#description' => t('activation and deactivation of the last news block'),
+			);
+			$form['#submit']=array('home_page_config_form_update');
+		}
+	}
+	return $form;
+}
+function home_page_config_block_save($delta = '', $edit = array()) {
+	$language_id= explode('_', $delta);
+	if ($delta == 'block_7_'.$language_id[2]) {
+		//dpm($delta);
+		variable_set('last_news_'.$language_id[2], $edit['last_news_'.$language_id[2]]);
+		variable_set('radio_'.$language_id[2], $edit['radio_'.$language_id[2]]);
+		variable_set('podcast_'.$language_id[2], $edit['podcast_'.$language_id[2]]);
+		variable_set('daily_program_'.$language_id[2], $edit['daily_program_'.$language_id[2]]);
+		variable_set('last_4_news_'.$language_id[2], $edit['last_4_news_'.$language_id[2]]);
+	}
+}
+/*===================================================================
+ *						Node validity check
+ ===================================================================*/
+function node_check($nid){
+	$query = db_select('node', 'n');
+	$query->condition('nid', $nid);
+	$query->condition('status', '1');
+	$query->fields('n');
+	$result = $query->execute();
+	if ($result->fetchAssoc()) {
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}
+/*===================================================================
+ *						Form error-message building
+ ===================================================================*/
+function message_builder($type,$nid){
+	if (($nid != 'none')&&(!node_check($nid))) {
+		return t('<div class="error_message">Last configured '.$type.' is no longer published or has been removed !</div>');
+	}
+}
+/*===================================================================
+ *				Cache set (for block N\B0: 1,2,3,4,5,6,7,9)
+ ===================================================================*/
+function home_page_config_cache($block_id){
+	if ($cache=cache_get('home_page_config_'.$block_id)) {
+		$node=$cache->data;
+		if (!empty($node)) {
+			//dpm($block_id.' : already cached !     --> Cache_Get');
+			return $node;
+		}
+		else {
+			cache_clear_all('home_page_config_'.$block_id,'cache', TRUE);
+			//dpm($block_id.' : has an EMPTY cache !     --> Cache_Clear_all','cache_clear','error');
+			return FALSE;
+		}
+	}
+	else {
+		$bid=explode('_',$block_id);
+		switch ($bid['1']) {
+			case '5':
+				$nid=home_page_config_get_last('rz_caricature',$bid['2']);
+				break;
+			case '6':
+				$nid=home_page_config_get_last('rz_photos',$bid['2']);
+				break;
+			default:
+				$nid=variable_get('dropdown_second_'.$block_id);
+				break;
+		}
+		if (node_check($nid)) {
+			$node=node_load($nid);
+			cache_set('home_page_config_'.$block_id,$node,'cache',time()+3600);
+			//dpm($block_id.' : No cache !     --> Cache_Set');
+			return ($node);
+		}
+		else {
+			return FALSE;
+		}
+	}
+}
+/*===================================================================
+ *								Cache clear
+ ===================================================================*/
+//------------------- blocks nodes association array -------------
+function block_node_assoc(){
+	$block_node_assoc = drupal_map_assoc(array_keys(home_page_config_block_info()));
+	foreach ($block_node_assoc as $block_id) {
+		$bid=explode('_',$block_id);
+		switch ($bid['1']) {
+			case '5':
+				$block_node_assoc[$block_id]=home_page_config_get_last('rz_caricature',$bid['2']);
+				break;
+			case '6':
+				$block_node_assoc[$block_id]=home_page_config_get_last('rz_photos',$bid['2']);
+				break;
+			case '7':
+				$i=1;
+				$block_node_assoc[$block_id]=home_page_config_get_last(variable_get('dropdown_last_news_'.$bid['2']),$bid['2']);
+				$last_4_news_ids=home_page_config_get_last_4_news(variable_get('dropdown_last_4_news_'.$bid['2']),$bid['2'],$block_node_assoc[$block_id]);
+				if ($last_4_news_ids) {
+					foreach ($last_4_news_ids as $value) {
+						$block_node_assoc[$block_id.'_'.$i]=$value;
+						$i++;
+					}
+				}
+				$block_node_assoc[$block_id.'_podcast'] =variable_get('dropdown_second_block_71_'.$bid['2'],NULL);
+				break;
+			default:
+				$block_node_assoc[$block_id]=variable_get('dropdown_second_'.$block_id,NULL);
+				break;
+		}
+	}
+	return ($block_node_assoc);
+}
+//---------------- Nodes updating -----------------------
+function home_page_config_node_update($node){
+	//dpm(block_node_assoc());
+	if ($block_id=array_search($node->nid,block_node_assoc())) {
+		$bid=explode('_',$block_id);
+		//cache_clear_all('home_page_config_block_'.$bid['1'].'_'.$bid['2'],'cache', TRUE);
+		cache_clear_all('home_page_config_block_'.$bid['1'],'cache', TRUE);
+	}
+}
+function home_page_config_node_delete($node){
+	if ($blok_id=array_search($node->nid,block_node_assoc())) {
+		$bid=explode('_',$blok_id);
+		//cache_clear_all('home_page_config_block_'.$bid['1'].'_'.$bid['2'],'cache', TRUE);
+		cache_clear_all('home_page_config_block_'.$bid['1'],'cache', TRUE);
+	}
+}
+//---------------- Form updating -----------------------
+function home_page_config_form_update(){
+	$block_ids=array_keys(block_node_assoc());
+	if (!empty($block_ids)) {
+		foreach ($block_ids as $block_id) {
+			$bid=explode('_',$block_id);
+			cache_clear_all('home_page_config_block_'.$bid['1'],'cache', TRUE);
+		}
+	}
+}
+//---------------- Vocabularies and terms updating -----------------------
+function home_page_config_taxonomy_vocabulary_update($vocabulary){
+	cache_clear_all('home_page_config_block_8_','cache', TRUE);
+	//dpm('taxonomy_vocabulary_update : '.'block_8 : has an EMPTY cache !     --> Cache_Clear_all','cache_clear','error');
+}
+function home_page_config_taxonomy_vocabulary_delete($vocabulary){
+	cache_clear_all('home_page_config_block_8_','cache', TRUE);
+	//dpm('taxonomy_vocabulary_delete : '.'block_8 : has an EMPTY cache !     --> Cache_Clear_all','cache_clear','error');
+}
+function home_page_config_taxonomy_vocabulary_insert($vocabulary){
+	cache_clear_all('home_page_config_block_8_','cache', TRUE);
+	//dpm('taxonomy_vocabulary_insert : '.'block_8 : has an EMPTY cache !     --> Cache_Clear_all','cache_clear','error');
+}
+function home_page_config_taxonomy_term_update($term){
+	cache_clear_all('home_page_config_block_8_','cache', TRUE);
+	//dpm('taxonomy_term_update : '.'block_8 : has an EMPTY cache !     --> Cache_Clear_all','cache_clear','error');
+}
+function home_page_config_taxonomy_term_delete($term){
+	cache_clear_all('home_page_config_block_8_','cache', TRUE);
+	//dpm('taxonomy_term_delete : '.'block_8 : has an EMPTY cache !     --> Cache_Clear_all','cache_clear','error');
+}
+function home_page_config_taxonomy_term_insert($term){
+	cache_clear_all('home_page_config_block_8_','cache', TRUE);
+	//dpm('taxonomy_term_insert : '.'block_8 : has an EMPTY cache !     --> Cache_Clear_all','cache_clear','error');
+}
+function _returnIconeType($type){
+	$c = content_types_config();
+	foreach($c as $key=>$value){
+		switch($key){
+			case 'audio':{
+				if(in_array($type,$value))
+				$ico_type ='audio';
+			}
+			break;
+			case 'video':{
+				if(in_array($type,$value))
+				$ico_type ='video';
+			}
+			break;
+			case 'image':{
+				if(in_array($type,$value))
+				$ico_type ='image';
+			}
+			break;
+			case 'news':{
+				if(in_array($type,$value))
+				$ico_type ='news';
+			}
+			break;
+			default:{
+				$ico_type ='default';
+			}
+		}
+
+	}
+	return $ico_type;
+}

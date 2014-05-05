@@ -1,0 +1,15 @@
+.block-home-page-config {
+	float: left;
+}
+
+div.block_style_4 {
+	float: right;
+}
+/*============================ todo28 ======================*/
+div#header-col-1 p span.article_info {
+	padding-right: 0px 10px;
+}
+
+div.block_style_2 div.tbcell p span.article_info span {
+	margin-right: 10px;
+}
